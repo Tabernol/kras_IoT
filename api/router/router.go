@@ -5,15 +5,16 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"kras_iot/api/handler"
+	"log"
 	"net/http"
 )
 
 func SetupRouter(db *sql.DB) http.Handler {
 	router := chi.NewRouter()
-	//userHandler, err := initService(db)
-	//if err != nil {
-	//	log.Println("problem in service layer")
-	//}
+	userHandler, err := initService(db)
+	if err != nil {
+		log.Println("problem in service layer")
+	}
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
@@ -26,16 +27,17 @@ func SetupRouter(db *sql.DB) http.Handler {
 
 	v1Router := chi.NewRouter()
 	v1Router.Get("/users", handler.HandleGet)
-	//v1Router.Post("/users", userHandler.CreateUser)
+	v1Router.Post("/users", userHandler.CreateUser)
 
 	router.Mount("/v1", v1Router)
 
 	return router
 }
 
-//func initService(db *sql.DB) (handler.UserHandler, error) {
-//	queries := database.New(db)
-//	userService := &service.UserService{Queries: queries}
-//	userHandler := &handler.UserHandler{UserService: userService}
-//	return *userHandler, nil
-//}
+func initService(db *sql.DB) (handler.UserHandler, error) {
+	//queries := database.New(db)
+	//userService := &service.UserService{Queries: queries}
+	//userHandler := &handler.UserHandler{UserService: userService}
+	userHandler := &handler.UserHandler{}
+	return *userHandler, nil
+}
